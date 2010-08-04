@@ -1,0 +1,42 @@
+====================================
+Getting Started
+====================================
+For Rails start the generator: kw_apn
+This will copy the configuration example into your project.
+
+If you not working with Rails you need to specify either Rails.root and Rails.env or RACK_ROOT and RACK_ENV for the gem to work.
+
+Manual:
+create the File
+<project_root>/config/kw_apn.yml
+
+structure of the config file should look like this:
+
+
+    environment: 
+      cert_file: path to ssl certificate file
+      push_host: 'gateway.sandbox.push.apple.com' or 'gateway.push.apple.com' for live
+      push_port: 2195
+      feedback_host: 'feedback.sandbox.push.apple.com' or 'feedback.push.apple.com' for live
+      feedback_port: 2196 
+  
+
+====================================
+Example
+====================================
+
+  users = MyAPNUsers.all
+  n = []
+  payload = {:aps => {:alert => "Something very important for everyone to read", :sound => 'annoying_beep'}}
+  
+  users.each do |u|
+    n << KwAPN::Notification.create(u.token, payload, 0)
+  end
+  
+  status, ret = KwAPN::Sender.push(n, 'TestSession')
+  
+  if status == :ok
+    ret.each do |token|
+      MyAPNUsers.delete_all('token'=>token)
+    end
+  end

@@ -1,0 +1,18 @@
+defaults: &defaults
+  cert_file: <%= Rails.root.join("config/cert", "apn_#{Rails.env}_cert.pem") %>
+  push_host: 'gateway.sandbox.push.apple.com'
+  push_port: 2195
+  feedback_host: 'feedback.sandbox.push.apple.com'
+  feedback_port: 2196
+
+development:
+  <<: *defaults
+  profile: true
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
+  push_host: 'gateway.push.apple.com'
+  feedback_host: 'feedback.push.apple.com'

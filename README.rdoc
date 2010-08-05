@@ -40,3 +40,12 @@ Example
       MyAPNUsers.delete_all('token'=>token)
     end
   end
+  
+
+====================================
+Copyright
+====================================
+
+Distributed under the MIT License.
+Based in part on Apns4r by Leonid Ponomarev (http://rdoc.info/projects/thegeekbird/Apns4r)
+  

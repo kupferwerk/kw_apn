@@ -7,9 +7,9 @@ end
 Gem::Specification.new do |s|
   s.name = 'kw_apn'
   s.version = version
-  s.authors = ['Jonathan Cichon']
+  s.authors = ['Jonathan Cichon', 'Kupferwerk GmbH']
   s.email = 'cichon@kupferwerk.com'
-  s.homepage = 'http://kupferwerk.com'
+  s.homepage = 'http://github.com/kupferwerk/kw_apn'
   s.summary = 'APN Lib by Kupferwerk'
   s.description = 'Apple Push Notification Library by Kupferwerk'
   s.has_rdoc = true

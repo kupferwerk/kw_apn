@@ -4,7 +4,7 @@ module KwAPN
   # if there is a bug on our side feel free to fix it, but for now it seems to work with the offset workaround
   ID_OFFSET = 333
   class Sender < Connection
-    attr_accessor :host, :port, :count, :fail_count, :work_thread, :watch_thread, :failed_index_array, :session_id
+    attr_accessor :host, :port, :count, :fail_count, :work_thread, :watch_thread, :failed_index_array, :session_id, :last_error_index
 
     # Creates new {Sender} object with given host and port
     def initialize(session_id, host=nil, port=nil)
@@ -40,6 +40,7 @@ module KwAPN
 private
     
     def start_threads(notifications, index=0)
+      @last_error_index = nil
       @ssl = connect(@host, @port, KwAPN::Config.options)
       if @ssl
         @watch_thread = Thread.new do 
@@ -63,33 +64,35 @@ private
     end
 
     def perform_batch(notifications, index=0)
-      notifications[index..-1].each_with_index do |n, i|
-        begin
+      begin
+        notifications[index..-1].each_with_index do |n, i|
           n.identifier = i + index + ID_OFFSET
           bytes = @ssl.write(n.to_s)
           if bytes <= 0
-            self.class.log("(#{session_id}) Warning at index #{i+index}: could not write to Socket")
-            # TODO?
-            # we do not realy want to respond to network errors, as we do not know how many apns might have been lost. 
-            # At the moment we hope the watchthread does everything right and our connection holds. 
+            raise "write returned #{bytes} bytes"
           end
-        rescue => e
-          # probably interrupted by watchthread, do nothing wait for restart
+        end
+        # wait for apple to respond errors
+        sleep(1)
+      rescue => e
+        if @last_error_index.nil?
+          # stop watchthread as the connection should be allready down
+          @watch_thread.exit
           self.class.log("(#{session_id}) Exception at index #{i+index}: #{e.message}")
-
-          #if e.message == 'Broken pipe'
-          #end
+          @failed_index_array << (i+index)
+          failed
+        else
+          # should be interrupted by watchthread, do nothing wait for restart
         end
       end
-      # wait for apple to respond errors
-      sleep(5)
     end
     
     def perform_watch
       ret = @ssl.read
       err = ret.strip.unpack('CCN')
       if err[1] != 0 and err[2]
-        @failed_index_array << (err[2] - ID_OFFSET)
+        @last_error_index = (err[2] - ID_OFFSET)
+        @failed_index_array << @last_error_index
         failed
         @work_thread.exit
       else

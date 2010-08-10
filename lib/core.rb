@@ -56,32 +56,11 @@ module KwAPN
     end
 
     # Converts to binary string wich can be writen directly into socket
-    # @return [String] binary string representation
-#    def to_s
-#      [0, 32, @token, @payload.length, @payload ].pack("CnH*na*")
-#    end
-    
+    # @return [String] binary string representation  
     def to_s
       [1, @identifier, @timestamp, 32, @token, @payload.length, @payload].pack("CNNnH*na*")
     end
 
-    # Counterpart of {Notification#to_s} - parses from binary string
-    # @param [String] bitstring string to parse
-    # @return [Notification] parsed Notification object
-#    def Notification.parse bitstring
-#      command, tokenlen, token, payloadlen, payload = bitstring.unpack("CnH64na*")
-#      Notification.new(token, payload)
-#    end
-
   end
 
-  class FeedbackServiceResponce
-
-    attr_accessor :timestamp, :token
-
-    def initialize bitstring
-      @timestamp, tokenlen, @token = *bitstring.unpack('NnH*')
-    end
-
-  end
 end

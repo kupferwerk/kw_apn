@@ -64,8 +64,10 @@ private
     end
 
     def perform_batch(notifications, index=0)
+      counter = 0
       begin
         notifications[index..-1].each_with_index do |n, i|
+          counter = i
           n.identifier = i + index + ID_OFFSET
           bytes = @ssl.write(n.to_s)
           if bytes <= 0
@@ -78,8 +80,8 @@ private
         if @last_error_index.nil?
           # stop watchthread as the connection should be allready down
           @watch_thread.exit
-          self.class.log("(#{session_id}) Exception at index #{i+index}: #{e.message}")
-          @failed_index_array << (i+index)
+          self.class.log("(#{session_id}) Exception at index #{counter+index}: #{e.message}")
+          @failed_index_array << (counter+index)
           failed
         else
           # should be interrupted by watchthread, do nothing wait for restart

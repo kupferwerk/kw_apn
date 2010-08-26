@@ -13,7 +13,7 @@ module KwAPN
       @session_id = session_id
       @app_id = app_id
       @host = KwAPN::Config.option(:push_host, app_id)  || 'gateway.sandbox.push.apple.com'
-      @port = KwAPN::Config.option(:push_host, app_id)  || 2195
+      @port = KwAPN::Config.option(:push_port, app_id)  || 2195
       @count = 0
       @fail_count = 0
       @failed_index_array = []
@@ -30,7 +30,7 @@ module KwAPN
         return [:ok, @failed_index_array.collect{|a| notifications[a].token}]
       rescue => e
         failed
-        self.class.log("(#{app_id} - #{session_id}) Exception: #{e.message}")
+        self.class.log("(#{app_id} - #{session_id}) Exception: #{e.message}\n\t#{e.backtrace.join("\n\t")}")
         return [:nok, "Exception: #{e.message}"]
       end
     end
@@ -44,7 +44,7 @@ private
     
     def start_threads(notifications, index=0)
       @last_error_index = nil
-      @ssl = connect(@host, @port)
+      @ssl = connect(@host, @port, @app_id)
       if @ssl
         @watch_thread = Thread.new do 
           perform_watch()

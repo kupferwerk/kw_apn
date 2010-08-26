@@ -34,11 +34,12 @@ module KwAPN
         @options = begin
           raw_config = File.read(root.join("config", "kw_apn.yml"))
           parsed_config = ERB.new(raw_config).result
-          YAML.load(parsed_config)[env].symbolize_keys
+          YAML.load(parsed_config)[env]
         rescue => e
           puts "Warning (KwAPN): Could not parse config file: #{e.message}"
           {}
         end
+        recursive_symbolize_keys!(@options)
         @options[:root] ||= root
         @options[:push_host] ||= default_push_host
         @options[:feedback_host] ||= default_feedback_host
@@ -48,12 +49,19 @@ module KwAPN
       # returns or loads the current options
       def option(opt, app_id = nil)
         @options || load_options
+        opt = opt.to_sym
+        app_id = app_id.to_sym
         if app_id && @options[app_id] && @options[app_id][opt]
           @options[app_id][opt]
         else
           @options[opt]
         end
       end
+      
+      def recursive_symbolize_keys!(hash)
+         hash.symbolize_keys!
+         hash.values.select{|v| v.is_a? Hash}.each{|h| recursive_symbolize_keys!(h)}
+       end
     end
 
       # set some default options based on the envrionment

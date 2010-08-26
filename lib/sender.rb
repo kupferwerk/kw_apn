@@ -4,13 +4,16 @@ module KwAPN
   # if there is a bug on our side feel free to fix it, but for now it seems to work with the offset workaround
   ID_OFFSET = 333
   class Sender < Connection
-    attr_accessor :host, :port, :count, :fail_count, :work_thread, :watch_thread, :failed_index_array, :session_id, :last_error_index
+    attr_accessor :host, :port, :count, :fail_count, :work_thread, :watch_thread, :failed_index_array, :session_id, :last_error_index, :app_id
 
     # Creates new {Sender} object with given host and port
-    def initialize(session_id, host=nil, port=nil)
+    # @param [String] session_id - A Identifier for Login purpose
+    # @param [String] app_id - The App ID to send to (in the default configuration, there only is 1 id)
+    def initialize(session_id, app_id = nil)
       @session_id = session_id
-      @host = host || KwAPN::Config.options[:push_host] || 'gateway.sandbox.push.apple.com'
-      @port = port || KwAPN::Config.options[:push_port] || 2195
+      @app_id = app_id
+      @host = KwAPN::Config.option(:push_host, app_id)  || 'gateway.sandbox.push.apple.com'
+      @port = KwAPN::Config.option(:push_host, app_id)  || 2195
       @count = 0
       @fail_count = 0
       @failed_index_array = []
@@ -27,7 +30,7 @@ module KwAPN
         return [:ok, @failed_index_array.collect{|a| notifications[a].token}]
       rescue => e
         failed
-        self.class.log("(#{session_id}) Exception: #{e.message}")
+        self.class.log("(#{app_id} - #{session_id}) Exception: #{e.message}")
         return [:nok, "Exception: #{e.message}"]
       end
     end
@@ -80,7 +83,7 @@ private
         if @last_error_index.nil?
           # stop watchthread as the connection should be allready down
           @watch_thread.exit
-          self.class.log("(#{session_id}) Exception at index #{counter+index}: #{e.message}")
+          self.class.log("(#{app_id} - #{session_id}) Exception at index #{counter+index}: #{e.message}")
           @failed_index_array << (counter+index)
           failed
         else
@@ -134,13 +137,14 @@ private
       # convenient way of connecting with apple and pushing the notifications
       # @param [Array] notifications - An Array of Objects of Type KwAPN::Notification
       # @param [String] session_id - A Identifier for Login purpose
+      # @param [String] app_id - A Identifier for Login purpose
       #
       # @returns [Symbol, Array/String] if no Problems occured :ok and an Array of Tokens failed to push is returned. The Caller should take care of those invalid Tokens.
-      def push(notifications, session_id=nil)
-        s = self.new(session_id)
+      def push(notifications, session_id = nil, app_id = nil)
+        s = self.new(session_id, app_id)
         startdate = Time.now
         status, ret = s.push_batch(notifications)
-        log("(#{session_id}) #{startdate.to_s} SENT APN #{s.count - s.fail_count}/#{s.count} in #{Time.now.to_i - startdate.to_i} seconds")
+        log("(#{app_id} - #{session_id}) #{startdate.to_s} SENT APN #{s.count - s.fail_count}/#{s.count} in #{Time.now.to_i - startdate.to_i} seconds")
         s.close_connection
         return [status, ret]
       end

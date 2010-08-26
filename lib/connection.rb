@@ -14,12 +14,12 @@ module KwAPN
       ssl = OpenSSL::SSL::SSLSocket.new(s, ctx)
       ssl.connect # start SSL session
       ssl.sync_close = true # close underlying socket on SSLSocket#close
-      ssl      
+      ssl
     end
     
     class << self
       def log(s)
-        File.open(KwAPN::Config.options[:root].join("log", "kw_apn.log"), File::WRONLY|File::APPEND|File::CREAT, 0666) do |f|
+        File.open(KwAPN::Config.option(:root).join("log", "kw_apn.log"), File::WRONLY|File::APPEND|File::CREAT, 0666) do |f|
           f.write("#{s}\n")
         end
       end

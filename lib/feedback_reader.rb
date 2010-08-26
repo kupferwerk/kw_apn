@@ -2,9 +2,9 @@ module KwAPN
   class FeedbackReader < Connection
     
     attr_accessor :host, :port
-    def initialize(host=nil, port=nil)
-      @host = host || KwAPN::Config.options[:feedback_host]
-      @port = port || KwAPN::Config.options[:feedback_port]
+    def initialize(app_id = nil)
+      @host = KwAPN::Config.option(:feedback_host, app_id)
+      @port = KwAPN::Config.option(:feedback_port, app_id)
     end
     
     def read

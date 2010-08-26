@@ -7,7 +7,6 @@ defaults: &defaults
 
 development:
   <<: *defaults
-  profile: true
 
 test:
   <<: *defaults

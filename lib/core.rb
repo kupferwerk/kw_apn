@@ -44,7 +44,7 @@ module KwAPN
   class Notification
 
     attr_accessor :identifier, :token
-    def initialize(token, payload, timestamp=0)
+    def initialize(token, payload, timestamp = 0)
       @token, @payload, @timestamp = token, payload, timestamp
     end
 

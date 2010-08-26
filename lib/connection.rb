@@ -5,10 +5,10 @@ module KwAPN
   
   class Connection
     
-    def connect(host, port, opts)
+    def connect(host, port, app_id = nil)
       ctx = OpenSSL::SSL::SSLContext.new()
-      ctx.cert = OpenSSL::X509::Certificate.new(File::read(opts[:cert_file]))
-      ctx.key  = OpenSSL::PKey::RSA.new(File::read(opts[:cert_file]))
+      ctx.cert = OpenSSL::X509::Certificate.new(File.read(KwAPN::Config.option(:cert_file, app_id)))
+      ctx.key  = OpenSSL::PKey::RSA.new(File.read(KwAPN::Config.option(:cert_file, app_id)))
 
       s = TCPSocket.new(host, port)
       ssl = OpenSSL::SSL::SSLSocket.new(s, ctx)

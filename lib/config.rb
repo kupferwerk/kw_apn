@@ -54,7 +54,8 @@ module KwAPN
           @options[opt]
         end
       end
-      
+    end
+
       # set some default options based on the envrionment
       if self.env == 'production'
         self.default_push_host = 'gateway.push.apple.com'
@@ -63,6 +64,6 @@ module KwAPN
         self.default_push_host = 'gateway.sandbox.push.apple.com'
         self.default_feedback_host = 'feedback.sandbox.push.apple.com'
       end
-    end
+      
   end
 end

@@ -44,7 +44,7 @@ private
     
     def start_threads(notifications, index=0)
       @last_error_index = nil
-      @ssl = connect(@host, @port, KwAPN::Config.options)
+      @ssl = connect(@host, @port)
       if @ssl
         @watch_thread = Thread.new do 
           perform_watch()

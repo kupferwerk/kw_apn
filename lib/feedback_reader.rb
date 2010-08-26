@@ -10,7 +10,7 @@ module KwAPN
     def read
       records ||= []
       begin
-        @ssl = connect(@host, @port, KwAPN::Config.options)
+        @ssl = connect(@host, @port)
         while record = @ssl.read(38)
           feedback = record.strip.unpack('NnH*')
           records << feedback[2].scan(/.{0,8}/).join(' ').strip

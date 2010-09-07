@@ -1,6 +1,13 @@
 ====================================
+About
+====================================
+
+Push Notification Library with support for the extended format. This Library is designed to send thousands of APNs at once without dropping a lot of messages on errors. Since version 0.4 it supports the use of multiple App IDs with one process.
+
+====================================
 Getting Started
 ====================================
+
 For Rails start the generator: kw_apn
 This will copy the configuration example into your project.
 
@@ -52,7 +59,7 @@ Example
   
 
 ====================================
-Configuring for multiple App IDs
+Multiple App IDs
 ====================================
 
 Since version 0.4 it is possible to use kw_apn with multiple App IDs.

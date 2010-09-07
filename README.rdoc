@@ -22,6 +22,15 @@ structure of the config file should look like this:
   
 
 ====================================
+Creating cert file
+====================================
+
+Export the key and the certificate as P12 files and run:
+
+    openssl pkcs12 -in apn-cert.p12 -out apn-cert.pem -nodes -clcerts
+    openssl pkcs12 -in apn-key.p12 -out apn-key.pem -nodes -clcerts
+
+====================================
 Example
 ====================================
 
@@ -41,6 +50,30 @@ Example
     end
   end
   
+
+====================================
+Configuring for multiple App IDs
+====================================
+
+Since version 0.4 it is possible to use kw_apn with multiple App IDs.
+
+
+Configuration Example: 
+
+    production:
+      'com.mycompany.app1':
+        cert_file: config/apn_certs/app1.pem
+        cert_key: config/apn_certs/app1.pem
+      'com.mycompany.app2':
+        cert_file: config/apn_certs/app2.pem
+        cert_key: config/apn_certs/app2.pem
+
+Usage Example
+
+  ... same as above...
+  
+  status, ret = KwAPN::Sender.push(n, 'TestSession', 'com.mycompany.app1')
+
 
 ====================================
 Copyright

@@ -50,8 +50,7 @@ module KwAPN
       def option(opt, app_id = nil)
         @options || load_options
         opt = opt.to_sym
-        app_id = app_id.to_sym
-        if app_id && @options[app_id] && @options[app_id][opt]
+        if app_id && (app_id = app_id.to_sym) && @options[app_id] && @options[app_id][opt]
           @options[app_id][opt]
         else
           @options[opt]

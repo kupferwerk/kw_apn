@@ -80,28 +80,33 @@ private
         # wait for apple to respond errors
         sleep(1)
       rescue => e
+        @watch_thread.join
+        
         if @last_error_index.nil?
           # stop watchthread as the connection should be allready down
-          @watch_thread.exit
           self.class.log("(#{app_id} - #{session_id}) Exception at index #{counter+index}: #{e.message}")
           @failed_index_array << (counter+index)
           failed
         else
           # should be interrupted by watchthread, do nothing wait for restart
         end
+        
       end
     end
     
     def perform_watch
-      ret = @ssl.read
-      err = ret.strip.unpack('CCN')
-      if err[1] != 0 and err[2]
-        @last_error_index = (err[2] - ID_OFFSET)
-        @failed_index_array << @last_error_index
-        failed
-        @work_thread.exit
-      else
-        perform_watch
+      begin
+        ret = @ssl.read
+        err = ret.strip.unpack('CCN')
+        if err[1] != 0 and err[2]
+          @last_error_index = (err[2] - ID_OFFSET)
+          @failed_index_array << @last_error_index
+          failed
+          @work_thread.exit
+        else
+          perform_watch
+        end
+      rescue => e
       end
     end
 

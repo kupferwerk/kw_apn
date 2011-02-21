@@ -27,7 +27,7 @@ module KwAPN
         end
         @count = notifications.length
         start_threads(notifications)
-        return [:ok, @failed_index_array.collect{|a| notifications[a].token}]
+        return [:ok, @failed_index_array.collect{|a| notifications[a].token_original}]
       rescue => e
         failed
         self.class.log("(#{app_id} - #{session_id}) Exception: #{e.message}\n\t#{e.backtrace.join("\n\t")}")

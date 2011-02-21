@@ -43,16 +43,16 @@ module KwAPN
 
   class Notification
 
-    attr_accessor :identifier, :token
-    def initialize(token, payload, timestamp = 0)
-      @token, @payload, @timestamp = token, payload, timestamp
+    attr_accessor :identifier, :token, :token_original
+    def initialize(token_original, token, payload, timestamp = 0)
+      @token_original, @token, @payload, @timestamp = token_original, token, payload, timestamp
     end
 
     # Creates new notification with given token and payload
     # @param [String, Fixnum] token APNs token of device to notify
     # @param [Hash, String] payload attached payload
     def Notification.create(token, payload, timestamp=0)
-      Notification.new(token.kind_of?(String) ? token.delete(' ') : token.to_s(16) , payload.kind_of?(Hash) ? payload.to_apn_payload : payload, timestamp)
+      Notification.new(token, token.kind_of?(String) ? token.delete(' ') : token.to_s(16) , payload.kind_of?(Hash) ? payload.to_apn_payload : payload, timestamp)
     end
 
     # Converts to binary string wich can be writen directly into socket

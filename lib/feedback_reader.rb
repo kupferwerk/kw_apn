@@ -19,7 +19,7 @@ module KwAPN
       rescue => e
         puts "Error reading feedback channel: #{e.message}"
       ensure
-        @ssl.close
+        @ssl.close if @ssl
       end
       return records
     end
